@@ -121,19 +121,18 @@ async function loadShows() {
 
 // ─── Contact Form ─────────────────────────────────────────────────────────────
 
-const form       = document.getElementById('contact-form');
-const successMsg = document.getElementById('form-success');
+const FORM_ENDPOINT = 'https://formspree.io/f/xbdwrqrj';
+const form          = document.getElementById('contact-form');
+const successMsg    = document.getElementById('form-success');
 
 form.addEventListener('submit', async (e) => {
-  if (!form.action.includes('formspree.io')) return;
-
   e.preventDefault();
   const btn = form.querySelector('.btn-submit');
   btn.disabled    = true;
   btn.textContent = 'Sending…';
 
   try {
-    const res = await fetch(form.action, {
+    const res = await fetch(FORM_ENDPOINT, {
       method:  'POST',
       body:    new FormData(form),
       headers: { Accept: 'application/json' },
