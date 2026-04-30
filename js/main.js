@@ -66,7 +66,7 @@ const form       = document.getElementById('contact-form');
 const successMsg = document.getElementById('form-success');
 
 form.addEventListener('submit', async (e) => {
-  if (form.action.includes('REPLACE_FORM_ID')) return; // fallback: native submit
+  if (!form.action.includes('formspree.io')) return; // fallback: native submit
 
   e.preventDefault();
   const btn = form.querySelector('.btn-submit');
