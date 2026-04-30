@@ -11,19 +11,21 @@ function safeText(str) {
 function formatEvent(isoStr, allDay) {
   const d = new Date(isoStr);
   return {
-    month: d.toLocaleDateString('en-US', { month: 'short' }),
-    day:   d.getDate(),
-    label: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
-    time:  allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+    weekday: d.toLocaleDateString('en-US', { weekday: 'short' }),
+    month:   d.toLocaleDateString('en-US', { month: 'short' }),
+    day:     d.getDate(),
+    label:   d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+    time:    allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
   };
 }
 
 function renderCard(event) {
-  const { month, day, label, time } = formatEvent(event.start, event.all_day);
+  const { weekday, month, day, label, time } = formatEvent(event.start, event.all_day);
 
   return `
     <article class="show-card">
       <div class="show-date" title="${safeText(label)}">
+        <span class="show-weekday">${weekday}</span>
         <span class="show-month">${month}</span>
         <span class="show-day">${day}</span>
       </div>
@@ -66,7 +68,7 @@ const form       = document.getElementById('contact-form');
 const successMsg = document.getElementById('form-success');
 
 form.addEventListener('submit', async (e) => {
-  if (!form.action.includes('formspree.io')) return; // fallback: native submit
+  if (!form.action.includes('formspree.io')) return;
 
   e.preventDefault();
   const btn = form.querySelector('.btn-submit');
@@ -81,8 +83,8 @@ form.addEventListener('submit', async (e) => {
     });
 
     if (res.ok) {
-      form.hidden        = true;
-      successMsg.hidden  = false;
+      form.hidden       = true;
+      successMsg.hidden = false;
     } else {
       throw new Error('submission failed');
     }
@@ -93,6 +95,45 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// ─── Slideshow ────────────────────────────────────────────────────────────────
+
+function initSlideshow() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = Array.from(document.querySelectorAll('.dot'));
+  if (!slides.length) return;
+
+  let current = 0;
+  let timer   = null;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = ((n % slides.length) + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function startTimer() {
+    timer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    startTimer();
+  }
+
+  document.querySelector('.slide-prev').addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+  document.querySelector('.slide-next').addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); resetTimer(); }));
+
+  const show = document.querySelector('.slideshow');
+  show.addEventListener('mouseenter', () => clearInterval(timer));
+  show.addEventListener('mouseleave', startTimer);
+
+  startTimer();
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 loadShows();
+initSlideshow();
