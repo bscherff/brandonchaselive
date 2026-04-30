@@ -19,6 +19,14 @@ function formatEvent(isoStr, allDay) {
   };
 }
 
+function renderTitle(summary) {
+  if (/\bJTB\b/i.test(summary)) {
+    const display = summary.replace(/\bJTB\b/gi, 'Jim Twitty Band');
+    return `<a href="https://jimtwitty.com" target="_blank" rel="noopener noreferrer">${safeText(display)}</a>`;
+  }
+  return safeText(summary);
+}
+
 function renderCard(event) {
   const { weekday, month, day, label, time } = formatEvent(event.start, event.all_day);
 
@@ -30,7 +38,7 @@ function renderCard(event) {
         <span class="show-day">${day}</span>
       </div>
       <div class="show-details">
-        <h3 class="show-title">${safeText(event.summary)}</h3>
+        <h3 class="show-title">${renderTitle(event.summary)}</h3>
         ${event.location ? `<p class="show-location">${safeText(event.location)}</p>` : ''}
         ${time ? `<p class="show-time">${time}</p>` : ''}
       </div>
