@@ -1,0 +1,98 @@
+document.getElementById('footer-year').textContent = new Date().getFullYear();
+
+// ─── Shows ────────────────────────────────────────────────────────────────────
+
+function safeText(str) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(str || ''));
+  return div.innerHTML;
+}
+
+function formatEvent(isoStr, allDay) {
+  const d = new Date(isoStr);
+  return {
+    month: d.toLocaleDateString('en-US', { month: 'short' }),
+    day:   d.getDate(),
+    label: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+    time:  allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+  };
+}
+
+function renderCard(event) {
+  const { month, day, label, time } = formatEvent(event.start, event.all_day);
+
+  return `
+    <article class="show-card">
+      <div class="show-date" title="${safeText(label)}">
+        <span class="show-month">${month}</span>
+        <span class="show-day">${day}</span>
+      </div>
+      <div class="show-details">
+        <h3 class="show-title">${safeText(event.summary)}</h3>
+        ${event.location ? `<p class="show-location">${safeText(event.location)}</p>` : ''}
+        ${time ? `<p class="show-time">${time}</p>` : ''}
+      </div>
+      ${event.url ? `<a href="${safeText(event.url)}" class="show-link" target="_blank" rel="noopener noreferrer">Details</a>` : ''}
+    </article>
+  `;
+}
+
+async function loadShows() {
+  const list = document.getElementById('shows-list');
+  try {
+    const res = await fetch('data/events.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const events = await res.json();
+    const today  = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const upcoming = events.filter(e => new Date(e.start) >= today);
+
+    if (upcoming.length === 0) {
+      list.innerHTML = '<p class="shows-empty">No upcoming shows right now &mdash; check back soon!</p>';
+      return;
+    }
+
+    list.innerHTML = upcoming.map(renderCard).join('');
+  } catch {
+    list.innerHTML = '<p class="shows-error">Could not load shows. Please try again later.</p>';
+  }
+}
+
+// ─── Contact Form ─────────────────────────────────────────────────────────────
+
+const form       = document.getElementById('contact-form');
+const successMsg = document.getElementById('form-success');
+
+form.addEventListener('submit', async (e) => {
+  if (!form.action.includes('formspree.io')) return; // fallback: native submit
+
+  e.preventDefault();
+  const btn = form.querySelector('.btn-submit');
+  btn.disabled    = true;
+  btn.textContent = 'Sending…';
+
+  try {
+    const res = await fetch(form.action, {
+      method:  'POST',
+      body:    new FormData(form),
+      headers: { Accept: 'application/json' },
+    });
+
+    if (res.ok) {
+      form.hidden        = true;
+      successMsg.hidden  = false;
+    } else {
+      throw new Error('submission failed');
+    }
+  } catch {
+    btn.disabled    = false;
+    btn.textContent = 'Send Message';
+    alert('Something went wrong — please email brandon@brandonchaselive.com directly.');
+  }
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+
+loadShows();
