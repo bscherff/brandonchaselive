@@ -2,19 +2,14 @@ document.getElementById('footer-year').textContent = new Date().getFullYear();
 
 // ─── Shows ────────────────────────────────────────────────────────────────────
 
-function safeText(str) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(str || ''));
-  return div.innerHTML;
-}
-
 function formatEvent(isoStr, allDay) {
   const d = new Date(isoStr);
   return {
-    month: d.toLocaleDateString('en-US', { month: 'short' }),
-    day:   d.getDate(),
-    label: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
-    time:  allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+    weekday: d.toLocaleDateString('en-US', { weekday: 'short' }),
+    month:   d.toLocaleDateString('en-US', { month: 'short' }),
+    day:     d.getDate(),
+    label:   d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+    time:    allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
   };
 }
 
@@ -50,39 +45,40 @@ async function loadShows() {
     const upcoming = events.filter(e => new Date(e.start) >= today);
 
     if (upcoming.length === 0) {
-      list.innerHTML = '<p class="shows-empty">No upcoming shows right now &mdash; check back soon!</p>';
+      setListMessage(list, 'shows-empty', 'No upcoming shows right now — check back soon!');
       return;
     }
 
-    list.innerHTML = upcoming.map(renderCard).join('');
+    const frag = document.createDocumentFragment();
+    upcoming.forEach(e => frag.appendChild(renderCard(e)));
+    list.replaceChildren(frag);
   } catch {
-    list.innerHTML = '<p class="shows-error">Could not load shows. Please try again later.</p>';
+    setListMessage(list, 'shows-error', 'Could not load shows. Please try again later.');
   }
 }
 
 // ─── Contact Form ─────────────────────────────────────────────────────────────
 
-const form       = document.getElementById('contact-form');
-const successMsg = document.getElementById('form-success');
+const FORM_ENDPOINT = 'https://formspree.io/f/xbdwrqrj';
+const form          = document.getElementById('contact-form');
+const successMsg    = document.getElementById('form-success');
 
 form.addEventListener('submit', async (e) => {
-  if (!form.action.includes('formspree.io')) return; // fallback: native submit
-
   e.preventDefault();
   const btn = form.querySelector('.btn-submit');
   btn.disabled    = true;
   btn.textContent = 'Sending…';
 
   try {
-    const res = await fetch(form.action, {
+    const res = await fetch(FORM_ENDPOINT, {
       method:  'POST',
       body:    new FormData(form),
       headers: { Accept: 'application/json' },
     });
 
     if (res.ok) {
-      form.hidden        = true;
-      successMsg.hidden  = false;
+      form.hidden       = true;
+      successMsg.hidden = false;
     } else {
       throw new Error('submission failed');
     }
@@ -93,6 +89,45 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// ─── Slideshow ────────────────────────────────────────────────────────────────
+
+function initSlideshow() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = Array.from(document.querySelectorAll('.dot'));
+  if (!slides.length) return;
+
+  let current = 0;
+  let timer   = null;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = ((n % slides.length) + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function startTimer() {
+    timer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    startTimer();
+  }
+
+  document.querySelector('.slide-prev').addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+  document.querySelector('.slide-next').addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); resetTimer(); }));
+
+  const show = document.querySelector('.slideshow');
+  show.addEventListener('mouseenter', () => clearInterval(timer));
+  show.addEventListener('mouseleave', startTimer);
+
+  startTimer();
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 loadShows();
+initSlideshow();

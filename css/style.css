@@ -345,6 +345,19 @@ a:hover {
   min-width: 0;
 }
 
+.show-title a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--amber-pale);
+  text-underline-offset: 3px;
+  transition: color 0.2s, text-decoration-color 0.2s;
+}
+
+.show-title a:hover {
+  color: var(--amber);
+  text-decoration-color: var(--amber);
+}
+
 .show-title {
   font-family: var(--font-serif);
   font-size: 1.05rem;
