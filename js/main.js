@@ -14,22 +14,84 @@ function formatEvent(isoStr, allDay) {
 }
 
 function renderCard(event) {
-  const { month, day, label, time } = formatEvent(event.start, event.all_day);
+  const { weekday, month, day, label, time } = formatEvent(event.start, event.all_day);
 
-  return `
-    <article class="show-card">
-      <div class="show-date" title="${safeText(label)}">
-        <span class="show-month">${month}</span>
-        <span class="show-day">${day}</span>
-      </div>
-      <div class="show-details">
-        <h3 class="show-title">${safeText(event.summary)}</h3>
-        ${event.location ? `<p class="show-location">${safeText(event.location)}</p>` : ''}
-        ${time ? `<p class="show-time">${time}</p>` : ''}
-      </div>
-      ${event.url && event.url.match(/^https?:\/\//) ? `<a href="${safeText(event.url)}" class="show-link" target="_blank" rel="noopener noreferrer">Details</a>` : ''}
-    </article>
-  `;
+  const article = document.createElement('article');
+  article.className = 'show-card';
+
+  // Date callout box — weekday first
+  const dateBox = document.createElement('div');
+  dateBox.className = 'show-date';
+  dateBox.title = label;
+
+  const wdEl = document.createElement('span');
+  wdEl.className = 'show-weekday';
+  wdEl.textContent = weekday;
+
+  const moEl = document.createElement('span');
+  moEl.className = 'show-month';
+  moEl.textContent = month;
+
+  const dyEl = document.createElement('span');
+  dyEl.className = 'show-day';
+  dyEl.textContent = String(day);
+
+  dateBox.append(wdEl, moEl, dyEl);
+
+  // Show details
+  const details = document.createElement('div');
+  details.className = 'show-details';
+
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'show-title';
+
+  if (/\bJTB\b/i.test(event.summary)) {
+    const a = document.createElement('a');
+    a.href = 'https://jimtwitty.com';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = event.summary.replace(/\bJTB\b/gi, 'Jim Twitty Band');
+    titleEl.appendChild(a);
+  } else {
+    titleEl.textContent = event.summary;
+  }
+  details.appendChild(titleEl);
+
+  if (event.location) {
+    const locEl = document.createElement('p');
+    locEl.className = 'show-location';
+    locEl.textContent = event.location;
+    details.appendChild(locEl);
+  }
+
+  if (time) {
+    const timeEl = document.createElement('p');
+    timeEl.className = 'show-time';
+    timeEl.textContent = time;
+    details.appendChild(timeEl);
+  }
+
+  article.append(dateBox, details);
+
+  // Optional details link — http/https URLs only
+  if (event.url && /^https?:\/\//.test(event.url)) {
+    const linkEl = document.createElement('a');
+    linkEl.href = event.url;
+    linkEl.className = 'show-link';
+    linkEl.target = '_blank';
+    linkEl.rel = 'noopener noreferrer';
+    linkEl.textContent = 'Details';
+    article.appendChild(linkEl);
+  }
+
+  return article;
+}
+
+function setListMessage(list, className, text) {
+  const p = document.createElement('p');
+  p.className = className;
+  p.textContent = text;
+  list.replaceChildren(p);
 }
 
 async function loadShows() {
