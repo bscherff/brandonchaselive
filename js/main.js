@@ -32,7 +32,7 @@ function renderCard(event) {
         ${event.location ? `<p class="show-location">${safeText(event.location)}</p>` : ''}
         ${time ? `<p class="show-time">${time}</p>` : ''}
       </div>
-      ${event.url ? `<a href="${safeText(event.url)}" class="show-link" target="_blank" rel="noopener noreferrer">Details</a>` : ''}
+      ${event.url && event.url.match(/^https?:\/\//) ? `<a href="${safeText(event.url)}" class="show-link" target="_blank" rel="noopener noreferrer">Details</a>` : ''}
     </article>
   `;
 }

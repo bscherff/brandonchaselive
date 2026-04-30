@@ -57,6 +57,7 @@ jobs:
               owner:   context.repo.owner,
               repo:    context.repo.repo,
               path,
+              message: 'chore: sync calendar events',
               message: 'chore: sync calendar events [skip ci]',
               content: newContent,
               sha,
