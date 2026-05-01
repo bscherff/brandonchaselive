@@ -322,6 +322,7 @@ a:hover {
   height: 60px;
   flex-shrink: 0;
   text-align: center;
+  margin-bottom: 1px;
 }
 
 .show-month {
@@ -334,9 +335,8 @@ a:hover {
 }
 
 .show-day {
-  font-family: var(--font-serif);
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.0rem;
+  font-weight: 500;
   line-height: 1.1;
   margin-top: 2px;
 }
