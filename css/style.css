@@ -538,6 +538,12 @@ a:hover {
   font-style: italic;
 }
 
+.shows-subscribe {
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: var(--brown-light);
+}
+
 /* ─── Videos ─────────────────────────────────────────────────────────────── */
 
 .videos {
