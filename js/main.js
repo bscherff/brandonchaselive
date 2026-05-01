@@ -2,39 +2,96 @@ document.getElementById('footer-year').textContent = new Date().getFullYear();
 
 // ─── Shows ────────────────────────────────────────────────────────────────────
 
-function safeText(str) {
-  const div = document.createElement('div');
-  div.appendChild(document.createTextNode(str || ''));
-  return div.innerHTML;
-}
-
 function formatEvent(isoStr, allDay) {
   const d = new Date(isoStr);
   return {
-    month: d.toLocaleDateString('en-US', { month: 'short' }),
-    day:   d.getDate(),
-    label: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
-    time:  allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
+    weekday: d.toLocaleDateString('en-US', { weekday: 'short' }),
+    month:   d.toLocaleDateString('en-US', { month: 'short' }),
+    day:     d.getDate(),
+    label:   d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }),
+    time:    allDay ? null : d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }),
   };
 }
 
 function renderCard(event) {
-  const { month, day, label, time } = formatEvent(event.start, event.all_day);
+  const { weekday, month, day, label, time } = formatEvent(event.start, event.all_day);
 
-  return `
-    <article class="show-card">
-      <div class="show-date" title="${safeText(label)}">
-        <span class="show-month">${month}</span>
-        <span class="show-day">${day}</span>
-      </div>
-      <div class="show-details">
-        <h3 class="show-title">${safeText(event.summary)}</h3>
-        ${event.location ? `<p class="show-location">${safeText(event.location)}</p>` : ''}
-        ${time ? `<p class="show-time">${time}</p>` : ''}
-      </div>
-      ${event.url && event.url.match(/^https?:\/\//) ? `<a href="${safeText(event.url)}" class="show-link" target="_blank" rel="noopener noreferrer">Details</a>` : ''}
-    </article>
-  `;
+  const article = document.createElement('article');
+  article.className = 'show-card';
+
+  // Date callout box — weekday first
+  const dateBox = document.createElement('div');
+  dateBox.className = 'show-date';
+  dateBox.title = label;
+
+  const wdEl = document.createElement('span');
+  wdEl.className = 'show-weekday';
+  wdEl.textContent = weekday;
+
+  const moEl = document.createElement('span');
+  moEl.className = 'show-month';
+  moEl.textContent = month;
+
+  const dyEl = document.createElement('span');
+  dyEl.className = 'show-day';
+  dyEl.textContent = String(day);
+
+  dateBox.append(wdEl, moEl, dyEl);
+
+  // Show details
+  const details = document.createElement('div');
+  details.className = 'show-details';
+
+  const titleEl = document.createElement('h3');
+  titleEl.className = 'show-title';
+
+  if (/\bJTB\b/i.test(event.summary)) {
+    const a = document.createElement('a');
+    a.href = 'https://jimtwitty.com';
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.textContent = event.summary.replace(/\bJTB\b/gi, 'Jim Twitty Band');
+    titleEl.appendChild(a);
+  } else {
+    titleEl.textContent = event.summary;
+  }
+  details.appendChild(titleEl);
+
+  if (event.location) {
+    const locEl = document.createElement('p');
+    locEl.className = 'show-location';
+    locEl.textContent = event.location;
+    details.appendChild(locEl);
+  }
+
+  if (time) {
+    const timeEl = document.createElement('p');
+    timeEl.className = 'show-time';
+    timeEl.textContent = time;
+    details.appendChild(timeEl);
+  }
+
+  article.append(dateBox, details);
+
+  // Optional details link — http/https URLs only
+  if (event.url && /^https?:\/\//.test(event.url)) {
+    const linkEl = document.createElement('a');
+    linkEl.href = event.url;
+    linkEl.className = 'show-link';
+    linkEl.target = '_blank';
+    linkEl.rel = 'noopener noreferrer';
+    linkEl.textContent = 'Details';
+    article.appendChild(linkEl);
+  }
+
+  return article;
+}
+
+function setListMessage(list, className, text) {
+  const p = document.createElement('p');
+  p.className = className;
+  p.textContent = text;
+  list.replaceChildren(p);
 }
 
 async function loadShows() {
@@ -50,39 +107,40 @@ async function loadShows() {
     const upcoming = events.filter(e => new Date(e.start) >= today);
 
     if (upcoming.length === 0) {
-      list.innerHTML = '<p class="shows-empty">No upcoming shows right now &mdash; check back soon!</p>';
+      setListMessage(list, 'shows-empty', 'No upcoming shows right now — check back soon!');
       return;
     }
 
-    list.innerHTML = upcoming.map(renderCard).join('');
+    const frag = document.createDocumentFragment();
+    upcoming.forEach(e => frag.appendChild(renderCard(e)));
+    list.replaceChildren(frag);
   } catch {
-    list.innerHTML = '<p class="shows-error">Could not load shows. Please try again later.</p>';
+    setListMessage(list, 'shows-error', 'Could not load shows. Please try again later.');
   }
 }
 
 // ─── Contact Form ─────────────────────────────────────────────────────────────
 
-const form       = document.getElementById('contact-form');
-const successMsg = document.getElementById('form-success');
+const FORM_ENDPOINT = 'https://formspree.io/f/xbdwrqrj';
+const form          = document.getElementById('contact-form');
+const successMsg    = document.getElementById('form-success');
 
 form.addEventListener('submit', async (e) => {
-  if (!form.action.includes('formspree.io')) return; // fallback: native submit
-
   e.preventDefault();
   const btn = form.querySelector('.btn-submit');
   btn.disabled    = true;
   btn.textContent = 'Sending…';
 
   try {
-    const res = await fetch(form.action, {
+    const res = await fetch(FORM_ENDPOINT, {
       method:  'POST',
       body:    new FormData(form),
       headers: { Accept: 'application/json' },
     });
 
     if (res.ok) {
-      form.hidden        = true;
-      successMsg.hidden  = false;
+      form.hidden       = true;
+      successMsg.hidden = false;
     } else {
       throw new Error('submission failed');
     }
@@ -93,6 +151,45 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
+// ─── Slideshow ────────────────────────────────────────────────────────────────
+
+function initSlideshow() {
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const dots   = Array.from(document.querySelectorAll('.dot'));
+  if (!slides.length) return;
+
+  let current = 0;
+  let timer   = null;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = ((n % slides.length) + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function startTimer() {
+    timer = setInterval(() => goTo(current + 1), 5000);
+  }
+
+  function resetTimer() {
+    clearInterval(timer);
+    startTimer();
+  }
+
+  document.querySelector('.slide-prev').addEventListener('click', () => { goTo(current - 1); resetTimer(); });
+  document.querySelector('.slide-next').addEventListener('click', () => { goTo(current + 1); resetTimer(); });
+  dots.forEach((dot, i) => dot.addEventListener('click', () => { goTo(i); resetTimer(); }));
+
+  const show = document.querySelector('.slideshow');
+  show.addEventListener('mouseenter', () => clearInterval(timer));
+  show.addEventListener('mouseleave', startTimer);
+
+  startTimer();
+}
+
 // ─── Init ─────────────────────────────────────────────────────────────────────
 
 loadShows();
+initSlideshow();
