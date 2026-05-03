@@ -620,6 +620,10 @@ a:hover {
   line-height: 1.7;
 }
 
+.form-honeypot {
+  display: none;
+}
+
 #contact-form {
   max-width: 540px;
   display: flex;
