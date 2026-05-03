@@ -29,6 +29,9 @@
   <meta name="twitter:description" content="Musician based in Northeast Florida playing drums, guitar, and mandolin. Book a show or catch the next one!">
   <meta name="twitter:image"       content="https://brandonchaselive.com/media/og-image.png">
 
+  <!-- Referrer Policy -->
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
   <!-- Content Security Policy -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.youtube.com https://open.spotify.com; connect-src 'self' https://formspree.io; form-action https://formspree.io;">
 
@@ -89,12 +92,12 @@
     <!-- Photo Slideshow -->
     <section class="slideshow" aria-label="Photos">
       <div class="slides">
-        <div class="slide active">
-          <img src="media/slide-1.jpeg" alt="Brandon Chase performing live" onerror="this.parentElement.classList.add('placeholder')">
+        <div class="slide active slide-portrait">
+          <img src="media/slide-1.jpeg" alt="Brandon Chase performing live">
           <div class="slide-ph-label">Photo 1</div>
         </div>
         <div class="slide">
-          <img src="media/slide-2.jpeg" alt="Brandon Chase performing live" onerror="this.parentElement.classList.add('placeholder')">
+          <img src="media/slide-2.jpeg" alt="Brandon Chase performing live">
           <div class="slide-ph-label">Photo 2</div>
         </div>
       </div>
@@ -102,8 +105,6 @@
       <button class="slide-btn slide-next" aria-label="Next photo">&#8594;</button>
       <div class="slide-dots" aria-hidden="true">
         <button class="dot active"></button>
-        <button class="dot"></button>
-        <button class="dot"></button>
         <button class="dot"></button>
       </div>
     </section>
@@ -206,6 +207,7 @@
           <!-- Honeypot spam trap -->
           <input type="text" name="_gotcha" tabindex="-1" aria-hidden="true" class="form-honeypot">
           <button type="submit" class="btn-submit">Send Message</button>
+          <p class="form-privacy">Submitted via <a href="https://formspree.io/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Formspree</a>. Your name, email, and message are stored on their servers.</p>
         </form>
         <div id="form-success" class="form-success" hidden>
           <p>Thanks for reaching out — I'll get back to you soon!</p>

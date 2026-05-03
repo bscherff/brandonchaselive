@@ -23,7 +23,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install icalendar
+        run: pip install icalendar==7.1.0
 
       - name: Fetch and parse calendar
         env:
