@@ -147,7 +147,13 @@ form.addEventListener('submit', async (e) => {
   } catch {
     btn.disabled    = false;
     btn.textContent = 'Send Message';
-    alert('Something went wrong — please email brandon@brandonchaselive.com directly.');
+    let errMsg = form.querySelector('.form-submit-error');
+    if (!errMsg) {
+      errMsg = document.createElement('p');
+      errMsg.className = 'form-submit-error';
+      btn.insertAdjacentElement('afterend', errMsg);
+    }
+    errMsg.textContent = 'Something went wrong — please email brandon@brandonchaselive.com directly.';
   }
 });
 
