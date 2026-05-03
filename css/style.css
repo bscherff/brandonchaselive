@@ -582,6 +582,27 @@ a:hover {
   }
 }
 
+/* ─── Listen ─────────────────────────────────────────────────────────────── */
+
+.listen {
+  padding: var(--pad-section) 0;
+  background-color: var(--cream-dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.spotify-wrap {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.spotify-wrap iframe {
+  display: block;
+  border: none;
+  border-radius: 12px;
+}
+
 /* ─── Contact ────────────────────────────────────────────────────────────── */
 
 .contact {
