@@ -300,6 +300,10 @@ a:hover {
   display: block;
 }
 
+.slide-portrait img {
+  object-fit: contain;
+}
+
 .slide.placeholder {
   display: flex;
   align-items: center;
@@ -698,6 +702,12 @@ a:hover {
   opacity: 0.55;
   cursor: not-allowed;
   transform: none;
+}
+
+.form-privacy {
+  font-size: 0.72rem;
+  color: var(--brown-light);
+  margin-top: 6px;
 }
 
 .form-success {
