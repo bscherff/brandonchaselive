@@ -64,13 +64,13 @@ def main():
         if start_dt < cutoff:
             continue
 
+        raw_url = clean(component.get("URL", ""))
         events.append({
-            "summary":     clean(component.get("SUMMARY", "")),
-            "start":       start_dt.isoformat(),
-            "all_day":     all_day,
-            "location":    clean(component.get("LOCATION", "")),
-            "description": clean(component.get("DESCRIPTION", "")),
-            "url":         clean(component.get("URL", "")),
+            "summary":  clean(component.get("SUMMARY", "")),
+            "start":    start_dt.isoformat(),
+            "all_day":  all_day,
+            "location": clean(component.get("LOCATION", "")),
+            "url":      raw_url if raw_url.startswith(("http://", "https://")) else "",
         })
 
     events.sort(key=lambda e: e["start"])

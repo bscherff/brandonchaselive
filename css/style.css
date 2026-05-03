@@ -710,6 +710,12 @@ a:hover {
   margin-top: 6px;
 }
 
+.form-submit-error {
+  font-size: 0.88rem;
+  color: #8B2020;
+  margin-top: 10px;
+}
+
 .form-success {
   max-width: 540px;
   background-color: var(--cream-card);
