@@ -156,6 +156,12 @@ form.addEventListener('submit', async (e) => {
 function initSlideshow() {
   const slides = Array.from(document.querySelectorAll('.slide'));
   const dots   = Array.from(document.querySelectorAll('.dot'));
+
+  // CSP blocks inline onerror attributes; handle broken images here instead
+  slides.forEach(slide => {
+    const img = slide.querySelector('img');
+    if (img) img.addEventListener('error', () => slide.classList.add('placeholder'));
+  });
   if (!slides.length) return;
 
   let current = 0;
