@@ -1,4 +1,5 @@
-document.getElementById('footer-year').textContent = new Date().getFullYear();
+const footerYear = document.getElementById('footer-year');
+if (footerYear) footerYear.textContent = new Date().getFullYear();
 
 // ─── Shows ────────────────────────────────────────────────────────────────────
 
@@ -96,6 +97,7 @@ function setListMessage(list, className, text) {
 
 async function loadShows() {
   const list = document.getElementById('shows-list');
+  if (!list) return;
   try {
     const res = await fetch('data/events.json');
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -125,37 +127,39 @@ const FORM_ENDPOINT = 'https://formspree.io/f/xbdwrqrj';
 const form          = document.getElementById('contact-form');
 const successMsg    = document.getElementById('form-success');
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = form.querySelector('.btn-submit');
-  btn.disabled    = true;
-  btn.textContent = 'Sending…';
+if (form) {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('.btn-submit');
+    btn.disabled    = true;
+    btn.textContent = 'Sending…';
 
-  try {
-    const res = await fetch(FORM_ENDPOINT, {
-      method:  'POST',
-      body:    new FormData(form),
-      headers: { Accept: 'application/json' },
-    });
+    try {
+      const res = await fetch(FORM_ENDPOINT, {
+        method:  'POST',
+        body:    new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
 
-    if (res.ok) {
-      form.hidden       = true;
-      successMsg.hidden = false;
-    } else {
-      throw new Error('submission failed');
+      if (res.ok) {
+        form.hidden       = true;
+        successMsg.hidden = false;
+      } else {
+        throw new Error('submission failed');
+      }
+    } catch {
+      btn.disabled    = false;
+      btn.textContent = 'Send Message';
+      let errMsg = form.querySelector('.form-submit-error');
+      if (!errMsg) {
+        errMsg = document.createElement('p');
+        errMsg.className = 'form-submit-error';
+        btn.insertAdjacentElement('afterend', errMsg);
+      }
+      errMsg.textContent = 'Something went wrong — please email brandon@brandonchaselive.com directly.';
     }
-  } catch {
-    btn.disabled    = false;
-    btn.textContent = 'Send Message';
-    let errMsg = form.querySelector('.form-submit-error');
-    if (!errMsg) {
-      errMsg = document.createElement('p');
-      errMsg.className = 'form-submit-error';
-      btn.insertAdjacentElement('afterend', errMsg);
-    }
-    errMsg.textContent = 'Something went wrong — please email brandon@brandonchaselive.com directly.';
-  }
-});
+  });
+}
 
 // ─── Slideshow ────────────────────────────────────────────────────────────────
 
