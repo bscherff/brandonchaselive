@@ -607,6 +607,168 @@ a:hover {
   border-radius: 12px;
 }
 
+/* ─── Page Hero (subpages) ───────────────────────────────────────────────── */
+
+.page-hero {
+  padding: 72px var(--pad-x) 64px;
+}
+
+.page-hero .hero-name {
+  font-size: clamp(2.2rem, 6vw, 3.6rem);
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--amber);
+}
+
+/* ─── Safe Ride: MADD Note ───────────────────────────────────────────────── */
+
+.madd-note {
+  padding: 28px 0;
+  background-color: var(--cream-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.madd-note-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--brown-mid);
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.madd-note-text a {
+  font-weight: 600;
+}
+
+/* ─── Safe Ride: Rideshare ───────────────────────────────────────────────── */
+
+.rideshare {
+  padding: var(--pad-section) 0;
+  background-color: var(--cream);
+}
+
+.rideshare-intro {
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--brown-mid);
+  margin-bottom: 32px;
+  max-width: 560px;
+}
+
+.rideshare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.rideshare-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: var(--cream-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 28px 26px;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.15s;
+}
+
+.rideshare-card:hover {
+  box-shadow: var(--shadow);
+  border-color: var(--amber-pale);
+  transform: translateY(-2px);
+}
+
+.rideshare-name {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--brown-deep);
+}
+
+.rideshare-cta {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--amber);
+}
+
+@media (max-width: 600px) {
+  .rideshare-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Safe Ride: Local Taxis ─────────────────────────────────────────────── */
+
+.taxis {
+  padding: var(--pad-section) 0;
+  background-color: var(--cream-dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.taxi-columns {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px;
+}
+
+.taxi-city-name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--brown-deep);
+  margin-bottom: 16px;
+}
+
+.taxi-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.taxi-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  background-color: var(--cream-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+
+.taxi-item-name {
+  font-size: 0.92rem;
+  color: var(--brown-deep);
+  font-weight: 600;
+}
+
+.taxi-item a {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.taxi-disclaimer {
+  margin-top: 28px;
+  font-size: 0.82rem;
+  color: var(--brown-light);
+  font-style: italic;
+}
+
+@media (max-width: 600px) {
+  .taxi-columns {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
 /* ─── Contact ────────────────────────────────────────────────────────────── */
 
 .contact {
